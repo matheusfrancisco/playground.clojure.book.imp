@@ -78,4 +78,51 @@
 
 ;;
 ;;When to use Keyowrds;
+; => :a-keyword
+; => ::also-a-keyword
 
+;; Applications of keywords
+
+(def population {:zombies 2700, :humans 9})
+(get population :zombies) ; => 2700
+(get population :test) ; => nil
+(:test population) ; => nil
+
+(prn (/ (get population :zombies)
+        (get population :humans))
+     "zombies per capita")
+; conjure/out | 300 "zombies per capita"
+
+;; As a functions
+(:zombies population) ; => 2700
+(prn (/ (:zombies population)
+        (:humans population))
+     "zombies per capita")
+; conjure/out | 300 "zombies per capita"
+
+(defn pour [lb ub]
+  (cond
+    (= ub :toujours) (iterate inc lb)
+    :else (range lb ub)))
+(pour 1 10)
+;(1 2 3 4 5 6 7 8 9)
+;(pour 1 :toujours)
+defn (do-blowfish [directive]
+  case (directive
+    :aquarium/blowfish (println "feed the fish")
+    :crypto/blowfish (println "encode the message")
+    :blowfish (println "not sure what to do")))
+
+(ns crypto)
+(user/do-blowfish :blowfish)
+; not sure what to do
+(user/do-blowfish ::blowfish)
+; encode the message
+(ns aquarium)
+(user/do-blowfish :blowfish)
+; not sure what to do
+(user/do-blowfish ::blowfish)
+; feed the fish
+
+
+;;Symbolic resolution
