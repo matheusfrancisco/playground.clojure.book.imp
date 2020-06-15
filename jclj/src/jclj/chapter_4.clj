@@ -126,3 +126,105 @@ defn (do-blowfish [directive]
 
 
 ;;Symbolic resolution
+
+
+(identical? 'goat 'goat)
+;=>false
+
+(= 'goat 'goat)
+; => true;
+
+(name 'goat); => "goat"
+
+;The identical? function in Clojure only ever returns true when the
+;symbols are the same object:
+(let [x 'goat, y x]
+  (identical? x y)) ; => true
+
+;;
+;;Metadata
+
+;;the with-meta function takes an object
+;; and a map an returns another object of the same type
+;; with the metadata attached. Equally named symbol often aren't
+;; the same instance
+;; because each can have its own unique metada:
+
+(let [x (with-meta 'goat {:ornery true})
+      y (with-meta 'goat {:ornery false})]
+  [(= x y)
+   (identical? x y)
+   (meta x)
+   (meta y)])
+;[true false {:ornery true} {:ornery false}]
+;The two locals x and y both hold an equal symbol 'goat, but they’re
+;different instances, each containing separate metadata maps obtained with
+;the meta function. So you see, symbol equality depends on neither
+;metadata nor identity. This equality semantic isn’t limited to symbols but is
+;pervasive in Clojure, as we’ll demonstrate throughout this book. You’ll find
+;that keywords can’t hold metadata[7] because any equally named keyword is
+;the same object.
+
+;;
+
+;;
+;For example,
+;the best function highlights this perfectly in the way that it takes the
+;greater-than function > and calls it in its body as f:
+
+
+(defn best [f xs]
+  (reduce #(if (f % %2) % %2) xs))
+
+(best > [1 2 3 4 5 6 7 8]) ;=> 8
+(best > [15 2 3 4 5 6 7 8]) ;=> 15
+
+
+; Regular expressions the second problem
+
+;;Regular expressions are a powerful and compact way to find specific
+;;patterns in text strings. Although we sympathize with Zawinski’s attitude
+;;and appreciate his wit, sometimes regular expressions are a useful tool to
+;;have on hand. The full capabilities of regular expressions (or regexes) are
+;;well beyond the scope of this section (Friedl 1997), but we’ll look at some
+;;of the ways Clojure uses Java’s regex capabilities.
+
+
+;A literal regular expression in Clojure[10] looks like this:
+#"an example pattern"
+
+(class #"example")
+; => java.util.regex.Pattern
+
+;Although the pattern is surrounded with double quotes like string literals,
+;the way things are escaped within the quotes isn’t the same. If you’ve
+;written regexes in Java, you know that any backslashes intended for
+;consumption by the regex compiler must be doubled, as shown in the
+;following compile call. This isn’t necessary in Clojure regex literals, as
+;shown by the undoubled return value:
+;(java.util.regex.Pattern/compile "\\d")
+;=> #"\d"
+
+
+;d UNIX_LINES ., ^, and $ match only the Unix line terminator '\n'.
+
+;i CASE_INSENSITIVE ASCII characters are matched without regard to uppercase or
+;lowercase.
+;
+;x COMMENTS Whitespace and comments in the pattern are ignored.
+;
+;m MULTILINE ^ and $ match near line terminators instead of only at the
+;beginning or end of the entire input string.
+;
+;s DOTALL . matches any character including the line terminator.
+;
+;u UNICODE_CASE Causes the i flag to use Unicode case insensitivity instead of
+;ASC
+
+;;
+;; Regular-expression functions
+
+;; Clojure regex workhorse. It returns a lazy seq of all matches in a string
+
+(re-seq #"\w+" "one-two/three")
+; => ("one" "two" "three")
