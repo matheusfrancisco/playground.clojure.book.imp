@@ -1,4 +1,4 @@
-(ns programming-clj-book-impl.exploring-clj.clj)
+(ns programming-clj-book-impl.exploring-clj)
 
 (+ 1 2 3)
 ;-> 6
@@ -193,3 +193,35 @@
 
 
 ;; VARS , BINDINGS AND NAMESPACES
+;; Metadata
+;; Calling Java
+;; Comments
+;; Flow control
+;; Where's my for loop?
+
+(defn indexed [coll]
+  (map-indexed vector coll))
+
+(indexed "abcd")
+;=> ([0 \a] [1 \b] [2 \c] [3 \d])
+(let [index-map (indexed "abcd")]
+  (-> index-map
+      first
+      rest))
+
+(let [[idx elt] (indexed "abcd")]
+      (prn idx)
+      (prn elt))
+
+(defn index-filter [pred coll]
+  (when pred
+    (for [[idx elt] (indexed coll) :when (pred elt)] idx)))
+
+(index-filter #{\a \b} "abcdef")
+(prn :when (#{\a \b} [0 \a]))
+
+
+(defn index-of-any [pred coll]
+  (first (index-filter pred coll)))
+
+(index-of-any #{\z \a} "zzabyycdxx")
